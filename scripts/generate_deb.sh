@@ -37,8 +37,5 @@ bash generate_tarball.sh ${NAME}.tar.gz
 
 tar -xvzf ${NAME}.tar.gz -C ${PROJECT} 
 dpkg-deb --build ${PROJECT} 
-BUILDSTATUS=$?
 mv ${PROJECT}.deb ${NAME}.deb
 rm -r ${PROJECT}
-
-exit $BUILDSTATUS

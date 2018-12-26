@@ -1,0 +1,6 @@
+systemLog:
+ logAppend: true
+ logRotate: reopen
+net:
+ bindIp: 127.0.0.1,::1
+ ipv6: true
