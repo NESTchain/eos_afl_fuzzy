@@ -48,22 +48,6 @@ if(BUILD_MONGO_DB_PLUGIN)
       message(STATUS "Found mongocxx library: ${EOS_LIBMONGOCXX}")
   else()
       message("Could NOT find MongoDB. mongo_db_plugin with MongoDB support will not be included.")
-      # sudo apt-get install pkg-config libssl-dev libsasl2-dev
-      # wget https://github.com/mongodb/mongo-c-driver/releases/download/1.8.0/mongo-c-driver-1.8.0.tar.gz
-      # tar xzf mongo-c-driver-1.8.0.tar.gz
-      # cd mongo-c-driver-1.8.0
-      # ./configure --disable-automatic-init-and-cleanup --enable-static
-      # make
-      # sudo make install
-      #
-      # git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/stable --depth 1
-      # cd mongo-cxx-driver/build
-      # cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DBUILD_SHARED_LIBS=OFF ..
-      # sudo make EP_mnmlstc_core
-      # make
-      # sudo make install
-      #
-      # sudo apt-get install mongodb
   endif()
 
   target_include_directories(mongo_db_plugin
