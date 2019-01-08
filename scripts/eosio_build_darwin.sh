@@ -253,7 +253,9 @@ printf "\\n"
 
 function print_instructions()
 {
-	printf "PATH=/usr/local/opt/gettext/bin:\$PATH >> ~/.bash_profile\\n"
+	printf "WAVM requires LLVM is installed and available. Please add the following to your .bash_profile/rc file:\\n"
+	printf "export PATH=/usr/local/opt/gettext/bin:\$HOME/opt/llvm/bin:\$PATH\\n"
+	printf "export LD_LIBRARY_PATH=\$HOME/opt/llvm/lib:\$LD_LIBRARY_PATH\\n"
 	printf "${BIN_LOCATION}/mongod --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"
 	return 0

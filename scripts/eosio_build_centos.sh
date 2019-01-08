@@ -284,7 +284,7 @@ if [ ! -d $LLVM_ROOT ]; then
 	&& git clone --depth 1 --single-branch --branch $LLVM_VERSION https://github.com/llvm-mirror/llvm.git llvm && cd llvm \
 	&& mkdir build \
 	&& cd build \
-	&& cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=.. -DLLVM_TARGETS_TO_BUILD= -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="WebAssembly" -DLLVM_ENABLE_RTTI=1 -DCMAKE_BUILD_TYPE="Release" .. \
+	&& cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${LLVM_ROOT}" -DLLVM_TARGETS_TO_BUILD="host" -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="WebAssembly" -DLLVM_ENABLE_RTTI=1 -DCMAKE_BUILD_TYPE="Release" .. \
 	&& make -j"${JOBS}" \
 	&& make install \
 	&& cd ../.. \
@@ -300,8 +300,9 @@ printf "\\n"
 
 function print_instructions()
 {
-	printf "Requirements to run eosio have been installed into $HOME/bin, $HOME/lib, etc. Please ensure:\\n"
-	printf "echo \"export PATH=\$HOME/bin:\$PATH\" >> ~/.bash_profile\\n"
+	printf "WAVM requires LLVM is installed and available. Please add the following to your .bash_profile/rc file:\\n"
+	printf "export PATH=\$HOME/opt/llvm/bin:\$PATH\\n"
+	printf "export LD_LIBRARY_PATH=\$HOME/opt/llvm/lib:\$LD_LIBRARY_PATH\\n"
 	printf "$( command -v mongod ) --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"
 	return 0
