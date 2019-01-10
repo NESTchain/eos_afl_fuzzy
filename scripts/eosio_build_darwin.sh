@@ -180,8 +180,8 @@ if [ $COUNT -gt 1 ]; then
 				printf "Installing Dependencies.\\n"
 				# Ignore cmake so we don't install a newer version.
 				# Build from source to use local cmake
-				if ! "${BREW}" install ${DEP} --ignore-dependencies cmake --build-from-source --force
-				then
+				if [[ $DEP =~ 'mongo-c' ]]; then FLAGS="--build-from-source"; fi
+				if ! "${BREW}" install $DEP $FLAGS; then
 					printf "Homebrew exited with the above errors.\\n"
 					printf "Exiting now.\\n\\n"
 					exit 1;
