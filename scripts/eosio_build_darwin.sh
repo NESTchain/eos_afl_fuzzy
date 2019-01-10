@@ -179,7 +179,8 @@ if [ $COUNT -gt 1 ]; then
 				brew tap eosio/eosio # Required to install mongo-cxx-driver with static library
 				printf "Installing Dependencies.\\n"
 				# Ignore cmake so we don't install a newer version.
-				if ! "${BREW}" install --ignore-dependencies cmake --force ${DEP}
+				# Build from source to use local cmake
+				if ! "${BREW}" install ${DEP} --ignore-dependencies cmake --build-from-source --force
 				then
 					printf "Homebrew exited with the above errors.\\n"
 					printf "Exiting now.\\n\\n"
