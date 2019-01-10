@@ -129,6 +129,24 @@ else
 	printf " - Python3 found\\n"
 fi
 
+printf "Checking CMAKE installation...\\n"
+CMAKE=$(command -v cmake 2>/dev/null)
+if [ -z $CMAKE ]; then
+	printf "Installing CMAKE...\\n"
+	curl -LO https://cmake.org/files/v$CMAKE_VERSION_MAJOR.$CMAKE_VERSION_MINOR/cmake-$CMAKE_VERSION.tar.gz \
+	&& tar xf cmake-$CMAKE_VERSION.tar.gz \
+	&& cd cmake-$CMAKE_VERSION \
+	&& ./bootstrap --prefix=$HOME \
+	&& make -j"${JOBS}" \
+	&& make install \
+	&& cd .. \
+	&& rm -f cmake-$CMAKE_VERSION.tar.gz \
+	|| exit 1
+	printf " - CMAKE successfully installed @ ${HOME}/bin/cmake \\n"
+else
+	printf " - CMAKE found @ ${CMAKE}.\\n"
+fi
+
 if [ $COUNT -gt 1 ]; then
 	printf "\\nThe following dependencies are required to install EOSIO.\\n"
 	printf "\\n${DISPLAY}\\n"
@@ -160,7 +178,8 @@ if [ $COUNT -gt 1 ]; then
 
 				brew tap eosio/eosio # Required to install mongo-cxx-driver with static library
 				printf "Installing Dependencies.\\n"
-				if ! "${BREW}" install --force ${DEP}
+				# Ignore cmake so we don't install a newer version.
+				if ! "${BREW}" install --ignore-dependencies cmake --force ${DEP}
 				then
 					printf "Homebrew exited with the above errors.\\n"
 					printf "Exiting now.\\n\\n"
@@ -177,24 +196,6 @@ fi
 
 
 printf "\\n"
-
-printf "Checking CMAKE installation...\\n"
-CMAKE=$(command -v cmake 2>/dev/null)
-if [ -z $CMAKE ]; then
-	printf "Installing CMAKE...\\n"
-	curl -LO https://cmake.org/files/v$CMAKE_VERSION_MAJOR.$CMAKE_VERSION_MINOR/cmake-$CMAKE_VERSION.tar.gz \
-	&& tar xf cmake-$CMAKE_VERSION.tar.gz \
-	&& cd cmake-$CMAKE_VERSION \
-	&& ./bootstrap --prefix=$HOME \
-	&& make -j"${JOBS}" \
-	&& make install \
-	&& cd .. \
-	&& rm -f cmake-$CMAKE_VERSION.tar.gz \
-	|| exit 1
-	printf " - CMAKE successfully installed @ ${HOME}/bin/cmake \\n"
-else
-	printf " - CMAKE found @ ${CMAKE}.\\n"
-fi
 
 printf "Checking Boost library (${BOOST_VERSION}) installation...\\n"
 if [ ! -d $BOOST_ROOT ]; then
