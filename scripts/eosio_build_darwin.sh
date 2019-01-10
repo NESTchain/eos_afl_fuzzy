@@ -240,16 +240,6 @@ fi
 
 printf "\\n"
 
-# LLVM on mac is complicated to install from source, so we use brew's llvm@4
-if [ ! -d $LLVM_ROOT ]; then
-	ln -s /usr/local/opt/llvm@4 $LLVM_ROOT \
-	|| exit 1
-	printf " - Symlinked ${LLVM_ROOT} -> /usr/local/opt/llvm@4.\\n"
-else
-	printf " - WASM found @ ${LLVM_ROOT} (brew installed into /usr/local/opt/llvm@4).\\n"
-fi
-
-
 cd ..
 printf "\\n"
 
@@ -259,7 +249,6 @@ function print_instructions()
 	# HOME/bin first to load proper cmake version over the one in /usr/bin.
 	# llvm/bin last to prevent llvm/bin/clang from being used over /usr/bin/clang + We don't symlink into $HOME/bin
 	printf "PATH=\$HOME/bin:\$PATH:/usr/local/opt/gettext/bin:\$HOME/opt/llvm/bin\\n"
-	printf "export LD_LIBRARY_PATH=\$HOME/opt/llvm/lib:\$LD_LIBRARY_PATH\\n"
 	printf "${BIN_LOCATION}/mongod --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"
 	return 0

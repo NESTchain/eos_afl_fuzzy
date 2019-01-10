@@ -239,25 +239,6 @@ fi
 
 printf "\\n"
 
-
-printf "Checking LLVM with WASM support...\\n"
-if [ ! -d $LLVM_ROOT ]; then
-	printf "Installing LLVM with WASM...\\n"
-	cd ../opt \
-	&& git clone --depth 1 --single-branch --branch $LLVM_VERSION https://github.com/llvm-mirror/llvm.git llvm && cd llvm \
-	&& mkdir build \
-	&& cd build \
-	&& cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="${LLVM_ROOT}" -DLLVM_TARGETS_TO_BUILD="host" -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="WebAssembly" -DLLVM_ENABLE_RTTI=1 -DCMAKE_BUILD_TYPE="Release" .. \
-	&& make -j"${JOBS}" \
-	&& make install \
-	&& cd ../.. \
-	|| exit 1
-	printf "WASM compiler successfully installed @ ${LLVM_ROOT}\\n"
-else
-	printf " - WASM found @ ${LLVM_ROOT}.\\n"
-fi
-
-
 cd ..
 printf "\\n"
 
@@ -267,7 +248,6 @@ function print_instructions()
 	# HOME/bin first to load proper cmake version over the one in /usr/bin.
 	# llvm/bin last to prevent llvm/bin/clang from being used over /usr/bin/clang + We don't symlink into $HOME/bin
 	printf "export PATH=\$HOME/bin:\$PATH:\$HOME/opt/llvm/bin\\n"
-	printf "export LD_LIBRARY_PATH=\$HOME/opt/llvm/lib:\$LD_LIBRARY_PATH\\n"
 	printf "$( command -v mongod ) --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"
 	return 0
