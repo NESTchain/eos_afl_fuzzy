@@ -65,6 +65,24 @@ then
 fi
 printf "Ruby installation found @ ${RUBY}\\n"
 
+printf "Checking CMAKE installation...\\n"
+CMAKE=$(command -v cmake 2>/dev/null)
+if [ -z $CMAKE ]; then
+	printf "Installing CMAKE...\\n"
+	curl -LO https://cmake.org/files/v$CMAKE_VERSION_MAJOR.$CMAKE_VERSION_MINOR/cmake-$CMAKE_VERSION.tar.gz \
+	&& tar xf cmake-$CMAKE_VERSION.tar.gz \
+	&& cd cmake-$CMAKE_VERSION \
+	&& ./bootstrap --prefix=$HOME \
+	&& make -j"${JOBS}" \
+	&& make install \
+	&& cd .. \
+	&& rm -f cmake-$CMAKE_VERSION.tar.gz \
+	|| exit 1
+	printf " - CMAKE successfully installed @ ${HOME}/bin/cmake \\n"
+else
+	printf " - CMAKE found @ ${CMAKE}.\\n"
+fi
+
 printf "Checking Home Brew installation\\n"
 if ! BREW=$( command -v brew )
 then
@@ -127,24 +145,6 @@ if [  -z "$( python3 -c 'import sys; print(sys.version_info.major)' 2>/dev/null 
 	(( COUNT++ ))
 else
 	printf " - Python3 found\\n"
-fi
-
-printf "Checking CMAKE installation...\\n"
-CMAKE=$(command -v cmake 2>/dev/null)
-if [ -z $CMAKE ]; then
-	printf "Installing CMAKE...\\n"
-	curl -LO https://cmake.org/files/v$CMAKE_VERSION_MAJOR.$CMAKE_VERSION_MINOR/cmake-$CMAKE_VERSION.tar.gz \
-	&& tar xf cmake-$CMAKE_VERSION.tar.gz \
-	&& cd cmake-$CMAKE_VERSION \
-	&& ./bootstrap --prefix=$HOME \
-	&& make -j"${JOBS}" \
-	&& make install \
-	&& cd .. \
-	&& rm -f cmake-$CMAKE_VERSION.tar.gz \
-	|| exit 1
-	printf " - CMAKE successfully installed @ ${HOME}/bin/cmake \\n"
-else
-	printf " - CMAKE found @ ${CMAKE}.\\n"
 fi
 
 if [ $COUNT -gt 1 ]; then
