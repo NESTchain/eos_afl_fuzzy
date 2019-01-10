@@ -67,7 +67,7 @@ if [ "${DISK_AVAIL%.*}" -lt "${DISK_MIN}" ]; then
 	exit 1
 fi
 
-DEP_ARRAY=(clang-4.0 lldb-4.0 libclang-4.0-dev cmake make automake libbz2-dev libssl-dev \
+DEP_ARRAY=(clang-4.0 lldb-4.0 libclang-4.0-dev make automake libbz2-dev libssl-dev \
 libgmp3-dev autotools-dev build-essential libicu-dev python2.7-dev python3-dev \
 autoconf libtool curl zlib1g-dev sudo)
 COUNT=1
@@ -142,8 +142,7 @@ printf "\\n"
 
 
 printf "Checking CMAKE installation...\\n"
-CMAKE=$(command -v cmake 2>/dev/null)
-if [ -z $CMAKE ]; then
+if [ ! -d $SRC_LOCATION/cmake-$CMAKE_VERSION ]; then
 	printf "Installing CMAKE...\\n"
 	curl -LO https://cmake.org/files/v$CMAKE_VERSION_MAJOR.$CMAKE_VERSION_MINOR/cmake-$CMAKE_VERSION.tar.gz \
 	&& tar xf cmake-$CMAKE_VERSION.tar.gz \
@@ -265,7 +264,9 @@ printf "\\n"
 function print_instructions()
 {
 	printf "WAVM requires LLVM is installed and available. Please add the following to your .bash_profile/rc file:\\n"
-	printf "export PATH=\$HOME/opt/llvm/bin:\$PATH\\n"
+	# HOME/bin first to load proper cmake version over the one in /usr/bin.
+	# llvm/bin last to prevent llvm/bin/clang from being used over /usr/bin/clang
+	printf "export PATH=\$HOME/bin:\$PATH:\$HOME/opt/llvm/bin\\n"
 	printf "export LD_LIBRARY_PATH=\$HOME/opt/llvm/lib:\$LD_LIBRARY_PATH\\n"
 	printf "$( command -v mongod ) --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"

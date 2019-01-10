@@ -245,7 +245,10 @@ fi
 
 if [ "$ARCH" == "Darwin" ]; then
    export OS_NAME=MacOSX
-   export PATH=/usr/local/opt/gettext/bin:$PATH
+	# HOME/bin first to load proper cmake version over the one in /usr/bin.
+	# llvm/bin last to prevent llvm/bin/clang from being used over /usr/bin/clang
+   export PATH=$HOME/bin:$PATH:/usr/local/opt/gettext/bin:$HOME/opt/llvm/bin
+   export LD_LIBRARY_PATH=$HOME/opt/llvm/lib:$LD_LIBRARY_PATH
    FILE="${CURRENT_DIR}/scripts/eosio_build_darwin.sh"
    CXX_COMPILER=clang++
    C_COMPILER=clang
