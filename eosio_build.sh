@@ -73,7 +73,7 @@ export LLVM_VERSION=release_40
 export LLVM_ROOT=$OPT_LOCATION/llvm
 export LLVM_DIR=$LLVM_ROOT/lib/cmake/llvm
 export TINI_VERSION=0.18.0
-export PATH=$MONGODB_LINK_LOCATION/bin:$PATH
+export PATH=$HOME/bin:$PATH:$HOME/opt/llvm/bin
 
 # Setup directories
 mkdir -p $SRC_LOCATION
