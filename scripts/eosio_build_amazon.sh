@@ -6,8 +6,11 @@ CPU_CORE=$( nproc )
 MEM_GIG=$(( ((MEM_MEG / 1000) / 2) ))
 export JOBS=$(( MEM_GIG > CPU_CORE ? CPU_CORE : MEM_GIG ))
 
-DISK_TOTAL=$( df -h . | grep /dev | tr -s ' ' | cut -d\  -f2 | sed 's/[^0-9]//' )
-DISK_AVAIL=$( df -h . | grep /dev | tr -s ' ' | cut -d\  -f4 | sed 's/[^0-9]//' )
+DISK_INSTALL=$( df -h . | tail -1 | tr -s ' ' | cut -d\  -f1 )
+DISK_TOTAL_KB=$( df . | tail -1 | awk '{print $2}' )
+DISK_AVAIL_KB=$( df . | tail -1 | awk '{print $4}' )
+DISK_TOTAL=$(( DISK_TOTAL_KB / 1048576 ))
+DISK_AVAIL=$(( DISK_AVAIL_KB / 1048576 ))
 
 DEP_ARRAY=( 
 	sudo procps which gcc72 gcc72-c++ autoconf automake libtool make \

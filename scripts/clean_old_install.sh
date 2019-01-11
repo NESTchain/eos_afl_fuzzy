@@ -15,8 +15,8 @@ if [ -d "/usr/local/include/eosio" ]; then
             rm -rf wasm
 
             if [ $( uname ) == "Darwin" ]; then
-               brew uninstall mongo-c-driver
-               brew uninstall mongo-cxx-driver
+               brew uninstall mongo-c-driver --force
+               brew uninstall mongo-cxx-driver --force
             fi
 
             pushd include &> /dev/null
