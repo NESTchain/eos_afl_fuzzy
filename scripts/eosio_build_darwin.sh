@@ -245,9 +245,8 @@ printf "\\n"
 
 function print_instructions()
 {
-	printf "WAVM requires LLVM is installed and available. Please add the following to your .bash_profile/rc file:\\n"
+	printf "Please ensure the following \$PATH stucture in the order specified within your ~/.bash_profile/rc file:\\n"
 	# HOME/bin first to load proper cmake version over the one in /usr/bin.
-	# llvm/bin last to prevent llvm/bin/clang from being used over /usr/bin/clang + We don't symlink into $HOME/bin
 	printf "PATH=\$HOME/bin:\$PATH:/usr/local/opt/gettext/bin\\n"
 	printf "${BIN_LOCATION}/mongod --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"
