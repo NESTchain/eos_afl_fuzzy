@@ -40,29 +40,50 @@ add_subdirectory(contracts)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/config.hpp ESCAPE_QUOTES)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/contracts.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/contracts.hpp ESCAPE_QUOTES)
 
-file(GLOB UNIT_TESTS "*.cpp")
+file(GLOB UNIT_TESTS "*.cpp") # find all unit test suites
+foreach(TEST_SUITE ${UNIT_TESTS}) # create an independent target for each test suite
+  get_filename_component(SUITE_NAME ${TEST_SUITE} NAME_WE)
+  add_executable(${SUITE_NAME} ${TEST_SUITE})
+  target_link_libraries(${SUITE_NAME} eosio_chain chainbase eosio_testing fc ${PLATFORM_SPECIFIC_LIBS})
+  target_compile_options(${SUITE_NAME} PUBLIC -DDISABLE_EOSLIB_SERIALIZE)
+  target_include_directories( unit_test PUBLIC
+                              ${CMAKE_SOURCE_DIR}/libraries/testing/include
+                              ${CMAKE_SOURCE_DIR}/test-contracts
+                              ${CMAKE_BINARY_DIR}/contracts
+                              ${CMAKE_CURRENT_SOURCE_DIR}/contracts
+                              ${CMAKE_CURRENT_BINARY_DIR}/contracts
+                              ${CMAKE_CURRENT_BINARY_DIR}/include )
+  if("wasm_tests" STREQUAL "${SUITE_NAME}")
+    add_test(NAME unit_test_wavm COMMAND ${SUITE_NAME} -t \!wasm_tests/weighted_cpu_limit_tests --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
+    add_test(NAME unit_test_wabt COMMAND ${SUITE_NAME} -t \!wasm_tests/weighted_cpu_limit_tests --report_level=detailed --color_output -- --wabt)
+  else()
+    add_test(NAME unit_test_wavm COMMAND ${SUITE_NAME} --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
+    add_test(NAME unit_test_wabt COMMAND ${SUITE_NAME} --report_level=detailed --color_output -- --wabt)
+  endif()
+endforeach(TEST_SUITE)
+
 
 add_executable( unit_test ${UNIT_TESTS} ${WASM_UNIT_TESTS} )
-target_link_libraries( unit_test eosio_chain chainbase eosio_testing fc ${PLATFORM_SPECIFIC_LIBS} )
+# target_link_libraries( unit_test eosio_chain chainbase eosio_testing fc ${PLATFORM_SPECIFIC_LIBS} )
 
-target_compile_options(unit_test PUBLIC -DDISABLE_EOSLIB_SERIALIZE)
+# target_compile_options(unit_test PUBLIC -DDISABLE_EOSLIB_SERIALIZE)
 
-target_include_directories( unit_test PUBLIC
-                            ${CMAKE_SOURCE_DIR}/libraries/testing/include
-                            ${CMAKE_SOURCE_DIR}/test-contracts
-                            ${CMAKE_BINARY_DIR}/contracts
-                            ${CMAKE_CURRENT_SOURCE_DIR}/contracts
-                            ${CMAKE_CURRENT_BINARY_DIR}/contracts
-                            ${CMAKE_CURRENT_BINARY_DIR}/include )
+# target_include_directories( unit_test PUBLIC
+#                             ${CMAKE_SOURCE_DIR}/libraries/testing/include
+#                             ${CMAKE_SOURCE_DIR}/test-contracts
+#                             ${CMAKE_BINARY_DIR}/contracts
+#                             ${CMAKE_CURRENT_SOURCE_DIR}/contracts
+#                             ${CMAKE_CURRENT_BINARY_DIR}/contracts
+#                             ${CMAKE_CURRENT_BINARY_DIR}/include )
 
 #Manually run unit_test for all supported runtimes
 #To run unit_test with all log from blockchain displayed, put --verbose after --, i.e. unit_test -- --verbose
-add_test(NAME unit_test_wavm COMMAND unit_test
- -t \!wasm_tests/weighted_cpu_limit_tests
- --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
- add_test(NAME unit_test_wabt COMMAND unit_test
- -t \!wasm_tests/weighted_cpu_limit_tests
- --report_level=detailed --color_output -- --wabt)
+# add_test(NAME unit_test_wavm COMMAND unit_test
+#  -t \!wasm_tests/weighted_cpu_limit_tests
+#  --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
+# add_test(NAME unit_test_wabt COMMAND unit_test
+#  -t \!wasm_tests/weighted_cpu_limit_tests
+#  --report_level=detailed --color_output -- --wabt)
 
 if(ENABLE_COVERAGE_TESTING)
 
