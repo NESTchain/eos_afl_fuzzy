@@ -46,7 +46,7 @@ foreach(TEST_SUITE ${UNIT_TESTS}) # create an independent target for each test s
   add_executable(${SUITE_NAME} ${TEST_SUITE})
   target_link_libraries(${SUITE_NAME} eosio_chain chainbase eosio_testing fc ${PLATFORM_SPECIFIC_LIBS})
   target_compile_options(${SUITE_NAME} PUBLIC -DDISABLE_EOSLIB_SERIALIZE)
-  target_include_directories( unit_test PUBLIC
+  target_include_directories( ${SUITE_NAME} PUBLIC
                               ${CMAKE_SOURCE_DIR}/libraries/testing/include
                               ${CMAKE_SOURCE_DIR}/test-contracts
                               ${CMAKE_BINARY_DIR}/contracts
@@ -54,16 +54,16 @@ foreach(TEST_SUITE ${UNIT_TESTS}) # create an independent target for each test s
                               ${CMAKE_CURRENT_BINARY_DIR}/contracts
                               ${CMAKE_CURRENT_BINARY_DIR}/include )
   if("wasm_tests" STREQUAL "${SUITE_NAME}")
-    add_test(NAME unit_test_wavm COMMAND ${SUITE_NAME} -t \!wasm_tests/weighted_cpu_limit_tests --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
-    add_test(NAME unit_test_wabt COMMAND ${SUITE_NAME} -t \!wasm_tests/weighted_cpu_limit_tests --report_level=detailed --color_output -- --wabt)
+    add_test(NAME unit_test_${SUITE_NAME}_wavm COMMAND ${SUITE_NAME} -t \!wasm_tests/weighted_cpu_limit_tests --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
+    add_test(NAME unit_test_${SUITE_NAME}_wabt COMMAND ${SUITE_NAME} -t \!wasm_tests/weighted_cpu_limit_tests --report_level=detailed --color_output -- --wabt)
   else()
-    add_test(NAME unit_test_wavm COMMAND ${SUITE_NAME} --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
-    add_test(NAME unit_test_wabt COMMAND ${SUITE_NAME} --report_level=detailed --color_output -- --wabt)
+    add_test(NAME unit_test_${SUITE_NAME}_wavm COMMAND ${SUITE_NAME} --report_level=detailed --color_output --catch_system_errors=no -- --wavm)
+    add_test(NAME unit_test_${SUITE_NAME}_wabt COMMAND ${SUITE_NAME} --report_level=detailed --color_output -- --wabt)
   endif()
 endforeach(TEST_SUITE)
 
 
-add_executable( unit_test ${UNIT_TESTS} ${WASM_UNIT_TESTS} )
+# add_executable( unit_test ${UNIT_TESTS} ${WASM_UNIT_TESTS} )
 # target_link_libraries( unit_test eosio_chain chainbase eosio_testing fc ${PLATFORM_SPECIFIC_LIBS} )
 
 # target_compile_options(unit_test PUBLIC -DDISABLE_EOSLIB_SERIALIZE)
