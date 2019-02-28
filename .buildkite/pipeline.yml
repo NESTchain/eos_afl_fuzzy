@@ -2,7 +2,7 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "ls -laht / && pwd"
+      - "pwd && ls -laht"
       # echo "+++ Building :hammer:" && \
       # anka ./scripts/eosio_build.sh -y && \
       # echo "--- Compressing build directory :compression:" && \
@@ -11,8 +11,6 @@ steps:
       chef/anka#v0.1.1:
         vm-name: high-sierra
         vm-registry-tag: fresh
-        volume: /private/var/tmp/job
-        workdir: /private/var/tmp/job
         always-pull: true
         inherit-environment-vars: false
         debug: true
