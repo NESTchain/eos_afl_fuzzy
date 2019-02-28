@@ -13,7 +13,7 @@ steps:
         vm-registry-tag: fresh
         workdir: job
         always-pull: true
-        inherit-environment-vars: true
+        inherit-environment-vars: false
         debug: true
     agents:
       - "role=anka-tester"
