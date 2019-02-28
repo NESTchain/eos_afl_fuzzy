@@ -7,7 +7,7 @@ steps:
       tar -pczf build.tar.gz build/
     label: ":darwin: High Sierra Build"
     agents:
-      - "role=builder-v2-1"
+      - "role=anka-test"
       - "os=high-sierra"
     artifact_paths: "build.tar.gz"
     timeout: 60
