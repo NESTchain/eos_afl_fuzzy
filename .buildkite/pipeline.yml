@@ -2,10 +2,10 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      # echo "+++ Building :hammer:" && \
-      # anka ./scripts/eosio_build.sh -y && \
-      # echo "--- Compressing build directory :compression:" && \
-      # tar -pczf build.tar.gz build/
+      echo "+++ Building :hammer:" && \
+      anka ./scripts/eosio_build.sh -y && \
+      echo "--- Compressing build directory :compression:" && \
+      tar -pczf build.tar.gz build/
     plugins:
       chef/anka#v0.1.1:
         vm-name: high-sierra
@@ -18,25 +18,31 @@ steps:
     artifact_paths: "build.tar.gz"
     timeout: 60
 
-  # - wait
+  - wait
 
-  # - command: |
-  #       echo "--- :arrow_down: Downloading build directory" && \
-  #       buildkite-agent artifact download "build.tar.gz" . --step ":darwin: High Sierra Build" && \
-  #       tar -zxf build.tar.gz && \
-  #       echo "--- :m: Starting MongoDB" && \
-  #       ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath "$(pwd)"/mongod.log && \
-  #       echo "+++ :microscope: Running tests" && \
-  #       ln -s "$(pwd)" /data/job && cd /data/job/build && PATH=\$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure
-  #   label: ":darwin: High Sierra Tests"
-  #   agents:
-  #     - "role=anka-tester"
-  #     - "os=high-sierra"
-  #   artifact_paths:
-  #     - "mongod.log"
-  #     - "build/genesis.json"
-  #     - "build/config.ini"
-  #   timeout: 60
+  - label: ":darwin: High Sierra Tests"
+    command:
+      echo "--- :arrow_down: Downloading build directory" && \
+      buildkite-agent artifact download "build.tar.gz" . --step ":darwin: High Sierra Build" && \
+      tar -zxf build.tar.gz && \
+      echo "--- :m: Starting MongoDB" && \
+      ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath "$(pwd)"/mongod.log && \
+      echo "+++ :microscope: Running tests" && \
+      ln -s "$(pwd)" /data/job && cd /data/job/build && PATH=\$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure
+    plugins:
+      chef/anka#v0.1.1:
+        vm-name: high-sierra
+        vm-registry-tag: fresh
+        always-pull: true
+        inherit-environment-vars: false
+        debug: true
+    agents:
+      - "role=anka-tester"
+    artifact_paths:
+      - "mongod.log"
+      - "build/genesis.json"
+      - "build/config.ini"
+    timeout: 60
 
   # - command: |
   #       echo "--- :arrow_down: Downloading build directory" && \
