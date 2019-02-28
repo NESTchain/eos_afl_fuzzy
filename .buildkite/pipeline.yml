@@ -11,7 +11,8 @@ steps:
       chef/anka#v0.1.1:
         vm-name: high-sierra
         vm-registry-tag: fresh
-        workdir: job
+        volume: /job
+        workdir: /job
         always-pull: true
         inherit-environment-vars: false
         debug: true
