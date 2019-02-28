@@ -1,10 +1,14 @@
 steps:
 
   - command: |
-      echo "+++ Building :hammer:" && \
-      ./scripts/eosio_build.sh -y && \
-      echo "--- Compressing build directory :compression:" && \
-      tar -pczf build.tar.gz build/
+      echo "Cloning ANKA Template VM" && \
+      anka clone ${BUILDKITE_AGENT_META_DATA_OS} ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_COMMIT}-${BUILDKITE_AGENT_META_DATA_OS}
+      echo "Starting ANKA cloned VM" && \
+      anka ${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_COMMIT}-${BUILDKITE_AGENT_META_DATA_OS}
+      # echo "+++ Building :hammer:" && \
+      # anka ./scripts/eosio_build.sh -y && \
+      # echo "--- Compressing build directory :compression:" && \
+      # tar -pczf build.tar.gz build/
     label: ":darwin: High Sierra Build"
     agents:
       - "role=anka-tester"
