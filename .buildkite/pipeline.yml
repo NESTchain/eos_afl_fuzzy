@@ -11,9 +11,9 @@ steps:
       # echo "--- Compressing build directory :compression:" && \
       # tar -pczf build.tar.gz build/
     label: ":darwin: High Sierra Build"
-    plugins:
-      chef/anka#v0.1.1:
-        vm-name: high-sierra
+    # plugins:
+    #   chef/anka#v0.1.1:
+    #     vm-name: high-sierra
     agents:
       - "role=anka-tester"
     artifact_paths: "build.tar.gz"
