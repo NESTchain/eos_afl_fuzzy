@@ -2,7 +2,6 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "pwd && ls -laht"
       # echo "+++ Building :hammer:" && \
       # anka ./scripts/eosio_build.sh -y && \
       # echo "--- Compressing build directory :compression:" && \
