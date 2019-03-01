@@ -3,7 +3,7 @@ steps:
   - label: ":darwin: High Sierra Build"
     command: |
       echo "+++ Building :hammer:" && \
-      anka ./scripts/eosio_build.sh -y && \
+      ./scripts/eosio_build.sh -y && \
       echo "--- Compressing build directory :compression:" && \
       tar -pczf build.tar.gz build
     plugins:
