@@ -9,7 +9,7 @@ steps:
     command:
       # - "./scripts/eosio_build.sh -y"
       - "mkdir build && touch build/test"
-      - "tar -pczf ~/ARTIFACTS/buildkite/build-2054caf4-472f-448e-ada3-5749d34cc60d.tar.gz build"
+      - "tar -pczf ~/ARTIFACTS/buildkite/build-$BUILDKITE_BUILD_ID.tar.gz build"
       # - "mv build.tar.gz ~/ARTIFACTS/buildkite/build-2054caf4-472f-448e-ada3-5749d34cc60d.tar.gz"
     plugins:
       chef/anka#v0.1.1:
