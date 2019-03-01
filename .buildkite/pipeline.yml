@@ -7,7 +7,7 @@ steps:
     command:
       - "echo \"+++ Building :hammer:\""
       - "anka run ${ANKA_IMAGE_NAME}-${BUILDKITE_JOB_ID} ./scripts/eosio_build.sh -y"
-      - "echo \"--- Compressing build directory :compression:\"
+      - "echo \"--- Compressing build directory :compression:\""
       - "tar -pczf build.tar.gz build"
     plugins:
       chef/anka#v0.1.1:
