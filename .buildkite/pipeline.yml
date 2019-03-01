@@ -5,13 +5,10 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "echo \"+++ Building :hammer:\""
-      - "anka run ${ANKA_IMAGE_NAME}-${BUILDKITE_JOB_ID} ./scripts/eosio_build.sh -y"
-      - "echo \"--- Compressing build directory :compression:\""
-      - "tar -pczf build.tar.gz build"
+      - "./scripts/eosio_build.sh -y && tar -pczf build.tar.gz build"
     plugins:
       chef/anka#v0.1.1:
-        vm-name: high-sierra
+        vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: fresh
         always-pull: true
         inherit-environment-vars: false
