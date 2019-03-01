@@ -7,15 +7,14 @@ steps:
   # You can look for problems using yamllint: brew install yamllint
   - label: ":darwin: High Sierra Build"
     command:
-      - "./scripts/eosio_build.sh -y"
-      - "tar -pczf build.tar.gz build"
-      - "mv build.tar.gz "
+      # - "./scripts/eosio_build.sh -y"
+      - "mkdir build && touch build/test"
+      - "tar -pczf ~/ARTIFACTS/buildkite/build-2054caf4-472f-448e-ada3-5749d34cc60d.tar.gz build"
+      # - "mv build.tar.gz ~/ARTIFACTS/buildkite/build-2054caf4-472f-448e-ada3-5749d34cc60d.tar.gz"
     plugins:
       chef/anka#v0.1.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        # volume is necessary for artifact storage (which exists on the host/node)
-        volume: ~/ARTIFACTS
         always-pull: true
         inherit-environment-vars: false
         debug: true
