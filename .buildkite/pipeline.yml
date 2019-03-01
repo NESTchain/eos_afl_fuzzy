@@ -1,11 +1,14 @@
+env:
+  ANKA_IMAGE_NAME: high-sierra
+
 steps:
 
   - label: ":darwin: High Sierra Build"
-    command: |
-      echo "+++ Building :hammer:" && \
-      ./scripts/eosio_build.sh -y && \
-      echo "--- Compressing build directory :compression:" && \
-      tar -pczf build.tar.gz build
+    command:
+      - "echo \"+++ Building :hammer:\""
+      - "anka run ${ANKA_IMAGE_NAME}-${BUILDKITE_JOB_ID} ./scripts/eosio_build.sh -y"
+      - "echo \"--- Compressing build directory :compression:\"
+      - "tar -pczf build.tar.gz build"
     plugins:
       chef/anka#v0.1.1:
         vm-name: high-sierra
@@ -24,31 +27,31 @@ steps:
         - exit_status: 255 # Forced agent shutdown
           limit: 2
 
-  - wait
+  # - wait
 
-  - label: ":darwin: High Sierra Tests"
-    command: |
-      echo "--- :arrow_down: Downloading build directory" && \
-      buildkite-agent artifact download "build.tar.gz" . --step ":darwin: High Sierra Build" && \
-      tar -zxf build.tar.gz && \
-      echo "--- :m: Starting MongoDB" && \
-      ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath "$(pwd)"/mongod.log && \
-      echo "+++ :microscope: Running tests" && \
-      ln -s "$(pwd)" /data/job && cd /data/job/build && PATH=\$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure
-    plugins:
-      chef/anka#v0.1.1:
-        vm-name: high-sierra
-        vm-registry-tag: fresh
-        always-pull: true
-        inherit-environment-vars: false
-        debug: true
-    agents:
-      - "role=anka-tester"
-    artifact_paths:
-      - "mongod.log"
-      - "build/genesis.json"
-      - "build/config.ini"
-    timeout: 60
+  # - label: ":darwin: High Sierra Tests"
+  #   command: |
+  #     echo "--- :arrow_down: Downloading build directory" && \
+  #     buildkite-agent artifact download "build.tar.gz" . --step ":darwin: High Sierra Build" && \
+  #     tar -zxf build.tar.gz && \
+  #     echo "--- :m: Starting MongoDB" && \
+  #     ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath "$(pwd)"/mongod.log && \
+  #     echo "+++ :microscope: Running tests" && \
+  #     ln -s "$(pwd)" /data/job && cd /data/job/build && PATH=\$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure
+  #   plugins:
+  #     chef/anka#v0.1.1:
+  #       vm-name: high-sierra
+  #       vm-registry-tag: fresh
+  #       always-pull: true
+  #       inherit-environment-vars: false
+  #       debug: true
+  #   agents:
+  #     - "role=anka-tester"
+  #   artifact_paths:
+  #     - "mongod.log"
+  #     - "build/genesis.json"
+  #     - "build/config.ini"
+  #   timeout: 60
 
   # - command: |
   #       echo "--- :arrow_down: Downloading build directory" && \
