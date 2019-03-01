@@ -1,7 +1,7 @@
 steps:
 
   - label: ":darwin: High Sierra Build"
-    command:
+    command: |
       echo "+++ Building :hammer:" && \
       anka ./scripts/eosio_build.sh -y && \
       echo "--- Compressing build directory :compression:" && \
@@ -17,11 +17,17 @@ steps:
       - "role=anka-tester"
     artifact_paths: "build.tar.gz"
     timeout: 60
+    retry:
+      automatic:
+        - exit_status: -1  # Agent was lost
+          limit: 2
+        - exit_status: 255 # Forced agent shutdown
+          limit: 2
 
   - wait
 
   - label: ":darwin: High Sierra Tests"
-    command:
+    command: |
       echo "--- :arrow_down: Downloading build directory" && \
       buildkite-agent artifact download "build.tar.gz" . --step ":darwin: High Sierra Build" && \
       tar -zxf build.tar.gz && \
