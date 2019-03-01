@@ -5,7 +5,7 @@ steps:
       echo "+++ Building :hammer:" && \
       anka ./scripts/eosio_build.sh -y && \
       echo "--- Compressing build directory :compression:" && \
-      tar -pczf build.tar.gz build/
+      tar -pczf build.tar.gz build
     plugins:
       chef/anka#v0.1.1:
         vm-name: high-sierra
