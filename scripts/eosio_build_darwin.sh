@@ -69,9 +69,8 @@ fi
 printf " - Ruby installation found @ ${RUBY}\\n"
 
 printf "Checking Home Brew installation...\\n"
-if ! BREW=$( command -v brew )
-then
-	printf "Homebrew must be installed to compile EOS.IO!\\n"
+if ! BREW=$( command -v brew ); then
+	printf " - Homebrew NOT found!\\n"
 	if [ $ANSWER != 1 ]; then read -p "Do you wish to install HomeBrew? (y/n)? " ANSWER; fi
 	case $ANSWER in
 		1 | [Yy]* )
