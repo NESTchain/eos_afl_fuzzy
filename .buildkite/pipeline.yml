@@ -11,7 +11,6 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "pwd"
       - "./scripts/eosio_build.sh -y"
       - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
@@ -37,7 +36,7 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "cd $ANKA_WORKDIR && tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz && cd build"
+      - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz && cd build"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
