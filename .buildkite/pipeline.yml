@@ -21,7 +21,7 @@ steps:
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
         always-pull: true
-        inherit-environment-vars: false
+        inherit-environment-vars: true
         debug: true
     agents:
       - "role=anka-tester"
