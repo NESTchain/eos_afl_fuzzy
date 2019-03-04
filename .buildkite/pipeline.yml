@@ -2,6 +2,8 @@
 env:
   ANKA_IMAGE_NAME: high-sierra
   ANKA_IMAGE_TAG: clean-nas-eosio-v2-2
+  ANKA_WORKDIR: /data/job
+
 steps:
   # Executing commands without the anka plugin enabled WILL EXECUTE ON THE HOST MACHINES AND COULD RUIN THEM. Please be sure to test the anka plugin is functional and executes all commands with 'anka run $COMMAND'
   # You can look for problems using yamllint: brew install yamllint
@@ -9,13 +11,15 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
+      - "pwd"
+      - "ls -laht scripts/"
       - "./scripts/eosio_build.sh -y"
       - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
       chef/anka#v0.1.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: /data/job
+        workdir: $ANKA_WORKDIR
         always-pull: true
         inherit-environment-vars: false
         debug: true
@@ -49,7 +53,7 @@ steps:
       chef/anka#v0.1.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: /data/job
+        workdir: $ANKA_WORKDIR
         always-pull: true
         inherit-environment-vars: false
         debug: true
