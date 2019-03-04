@@ -35,10 +35,9 @@ steps:
   - label: ":darwin: High Sierra Tests"
     command:
       - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
+      - "cd build"
       - "pwd"
-      - "ls -laht"
-      - "ls -laht build"
-      - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
+      - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
       - "build/genesis.json"
@@ -49,6 +48,7 @@ steps:
       chef/anka#v0.1.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
+        no-volume: true
         always-pull: true
         inherit-environment-vars: false
         debug: true
@@ -62,30 +62,30 @@ steps:
         - exit_status: 255
           limit: 2
 
-  - label: ":darwin: High Sierra NP Tests"
-    command:
-      - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
-      - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
-      # - "rm -rf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
-    artifact_paths:
-      - "var/log/mongodb/mongod.log"
-      - "build/genesis.json"
-      - "build/config.ini"
-    agents:
-      - "role=anka-tester"
-    plugins:
-      chef/anka#v0.1.1:
-        vm-name: $ANKA_IMAGE_NAME
-        vm-registry-tag: $ANKA_IMAGE_TAG
-        always-pull: true
-        inherit-environment-vars: false
-        debug: true
-    timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
+  # - label: ":darwin: High Sierra NP Tests"
+  #   command:
+  #     - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
+  #     - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
+  #     # - "rm -rf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
+  #   artifact_paths:
+  #     - "var/log/mongodb/mongod.log"
+  #     - "build/genesis.json"
+  #     - "build/config.ini"
+  #   agents:
+  #     - "role=anka-tester"
+  #   plugins:
+  #     chef/anka#v0.1.1:
+  #       vm-name: $ANKA_IMAGE_NAME
+  #       vm-registry-tag: $ANKA_IMAGE_TAG
+  #       always-pull: true
+  #       inherit-environment-vars: false
+  #       debug: true
+  #   timeout: 60
+  #   retry:
+  #     automatic:
+  #       # Agent was lost
+  #       - exit_status: -1
+  #         limit: 2
+  #       # Forced agent shutdown
+  #       - exit_status: 255
+  #         limit: 2
