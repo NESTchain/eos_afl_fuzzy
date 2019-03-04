@@ -37,7 +37,7 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "cd $ANKA_WORKDIR && tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz && cd build"
+      - "cd $ANKA_WORKDIR && tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz && cd build"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
