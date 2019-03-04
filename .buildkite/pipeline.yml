@@ -11,8 +11,7 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "env"
-      - "ls -laht scripts/"
+      - "pwd"
       - "./scripts/eosio_build.sh -y"
       - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
@@ -21,7 +20,6 @@ steps:
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
         always-pull: true
-        # inherit-environment-vars: true
         debug: true
     agents:
       - "role=anka-tester"
@@ -53,7 +51,6 @@ steps:
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
         always-pull: true
-        inherit-environment-vars: false
         debug: true
     timeout: 60
     retry:
