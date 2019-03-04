@@ -1,36 +1,37 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-1
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-2
 steps:
   # Executing commands without the anka plugin enabled WILL EXECUTE ON THE HOST MACHINES AND COULD RUIN THEM. Please be sure to test the anka plugin is functional and executes all commands with 'anka run $COMMAND'
   # You can look for problems using yamllint: brew install yamllint
   # Artifact storage is available through clean-nas images; mounted NAS located in /Network/AFP/NAS
 
-  # - label: ":darwin: High Sierra Build"
-  #   command:
-  #     - "./scripts/eosio_build.sh -y"
-  #     - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
-  #   plugins:
-  #     chef/anka#v0.1.1:
-  #       vm-name: $ANKA_IMAGE_NAME
-  #       vm-registry-tag: $ANKA_IMAGE_TAG
-  #       always-pull: true
-  #       inherit-environment-vars: false
-  #       debug: true
-  #   agents:
-  #     - "role=anka-tester"
-  #   timeout: 60
-  #   retry:
-  #     automatic:
-  #       # Agent was lost
-  #       - exit_status: -1
-  #         limit: 2
-  #       # Forced agent shutdown
-  #       - exit_status: 255
-  #         limit: 2
+  - label: ":darwin: High Sierra Build"
+    command:
+      - "./scripts/eosio_build.sh -y"
+      - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
+    plugins:
+      chef/anka#v0.1.1:
+        vm-name: $ANKA_IMAGE_NAME
+        vm-registry-tag: $ANKA_IMAGE_TAG
+        workdir: /data/job
+        always-pull: true
+        inherit-environment-vars: false
+        debug: true
+    agents:
+      - "role=anka-tester"
+    timeout: 60
+    retry:
+      automatic:
+        # Agent was lost
+        - exit_status: -1
+          limit: 2
+        # Forced agent shutdown
+        - exit_status: 255
+          limit: 2
 
-  # - wait
+  - wait
 
   - label: ":darwin: High Sierra Tests"
     command:
@@ -48,6 +49,7 @@ steps:
       chef/anka#v0.1.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
+        workdir: /data/job
         always-pull: true
         inherit-environment-vars: false
         debug: true
