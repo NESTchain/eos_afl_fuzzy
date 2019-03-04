@@ -1,7 +1,7 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean
+  ANKA_IMAGE_TAG: clean-nas
 steps:
   # Executing commands without the anka plugin enabled WILL EXECUTE ON THE HOST MACHINES AND COULD RUIN THEM. Please be sure to test the anka plugin is functional and executes all commands with 'anka run $COMMAND'
   # You can look for problems using yamllint: brew install yamllint
