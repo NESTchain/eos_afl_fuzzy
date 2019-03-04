@@ -1,7 +1,7 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-2
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-3
   ANKA_WORKDIR: /data/job
 
 steps:
@@ -39,9 +39,7 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
-      - "cd build"
-      - "pwd"
+      - "cd $ANKA_WORKDIR && tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz && cd build"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
