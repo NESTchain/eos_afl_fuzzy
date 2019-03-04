@@ -11,6 +11,7 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
+      - "df -h"
       - "pwd"
       - "ls -laht"
       - "./scripts/eosio_build.sh -y"
@@ -19,8 +20,8 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        # workdir: $ANKA_WORKDIR
-        # volume: $ANKA_WORKDIR
+        workdir: $ANKA_WORKDIR
+        volume: $ANKA_WORKDIR
         always-pull: true
         debug: true
     agents:
