@@ -1,11 +1,11 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-0
 steps:
   # Executing commands without the anka plugin enabled WILL EXECUTE ON THE HOST MACHINES AND COULD RUIN THEM. Please be sure to test the anka plugin is functional and executes all commands with 'anka run $COMMAND'
   # You can look for problems using yamllint: brew install yamllint
-  # Artifact storage is available through the mounted NAS located in /Network/AFP/NAS
+  # Artifact storage is available through clean-nas images; mounted NAS located in /Network/AFP/NAS
 
   - label: ":darwin: High Sierra Build"
     command:
@@ -34,6 +34,7 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
+      - "pwd"
       - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
       - "~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log"
       - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
