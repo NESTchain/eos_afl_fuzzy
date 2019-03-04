@@ -1,7 +1,7 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-0
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-1
 steps:
   # Executing commands without the anka plugin enabled WILL EXECUTE ON THE HOST MACHINES AND COULD RUIN THEM. Please be sure to test the anka plugin is functional and executes all commands with 'anka run $COMMAND'
   # You can look for problems using yamllint: brew install yamllint
@@ -34,12 +34,10 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "pwd"
       - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
-      - "~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log"
       - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
-      - "mongod.log"
+      - "var/log/mongodb/mongod.log"
       - "build/genesis.json"
       - "build/config.ini"
     agents:
@@ -64,7 +62,6 @@ steps:
   - label: ":darwin: High Sierra NP Tests"
     command:
       - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
-      - "~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log"
       - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
       - "rm -rf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
     artifact_paths:
