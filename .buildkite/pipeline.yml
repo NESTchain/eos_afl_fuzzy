@@ -9,34 +9,34 @@ steps:
   # You can look for problems using yamllint: brew install yamllint
   # Artifact storage is available through clean-nas images; mounted NAS located in /Network/AFP/NAS
 
-  # - label: ":darwin: High Sierra Build"
-  #   command:
-  #     - "./scripts/eosio_build.sh -y"
-  #     - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
-  #   plugins:
-  #     chef/anka#v0.2.0:
-  #       vm-name: $ANKA_IMAGE_NAME
-  #       vm-registry-tag: $ANKA_IMAGE_TAG
-  #       workdir: $ANKA_WORKDIR
-  #       always-pull: true
-  #       debug: true
-  #   agents:
-  #     - "role=anka-tester"
-  #   timeout: 60
-  #   retry:
-  #     automatic:
-  #       # Agent was lost
-  #       - exit_status: -1
-  #         limit: 2
-  #       # Forced agent shutdown
-  #       - exit_status: 255
-  #         limit: 2
+  - label: ":darwin: High Sierra Build"
+    command:
+      - "./scripts/eosio_build.sh -y"
+      - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
+    plugins:
+      chef/anka#v0.2.0:
+        vm-name: $ANKA_IMAGE_NAME
+        vm-registry-tag: $ANKA_IMAGE_TAG
+        workdir: $ANKA_WORKDIR
+        always-pull: true
+        debug: true
+    agents:
+      - "role=anka-tester"
+    timeout: 60
+    retry:
+      automatic:
+        # Agent was lost
+        - exit_status: -1
+          limit: 2
+        # Forced agent shutdown
+        - exit_status: 255
+          limit: 2
 
-  # - wait
+  - wait
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-5f3c25a6-b981-426c-b397-68b029a6e385.tar.gz"
+      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
       - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
@@ -61,30 +61,30 @@ steps:
         - exit_status: 255
           limit: 2
 
-  # - label: ":darwin: High Sierra NP Tests"
-  #   command:
-  #     - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
-  #     - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
-  #     # - "rm -rf /Network/AFP/NAS/buildkite-artifacts/build-2d414b58-7ae7-4ccc-83bc-f7abdf4435de.tar.gz"
-  #   artifact_paths:
-  #     - "var/log/mongodb/mongod.log"
-  #     - "build/genesis.json"
-  #     - "build/config.ini"
-  #   agents:
-  #     - "role=anka-tester"
-  #   plugins:
-  #     chef/anka#v0.1.1:
-  #       vm-name: $ANKA_IMAGE_NAME
-  #       vm-registry-tag: $ANKA_IMAGE_TAG
-  #       always-pull: true
-  #       inherit-environment-vars: false
-  #       debug: true
-  #   timeout: 60
-  #   retry:
-  #     automatic:
-  #       # Agent was lost
-  #       - exit_status: -1
-  #         limit: 2
-  #       # Forced agent shutdown
-  #       - exit_status: 255
-  #         limit: 2
+  - label: ":darwin: High Sierra NP Tests"
+    command:
+      - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
+      - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
+      - "rm -rf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
+    artifact_paths:
+      - "var/log/mongodb/mongod.log"
+      - "build/genesis.json"
+      - "build/config.ini"
+    agents:
+      - "role=anka-tester"
+    plugins:
+      chef/anka#v0.2.0:
+        vm-name: $ANKA_IMAGE_NAME
+        vm-registry-tag: $ANKA_IMAGE_TAG
+        workdir: $ANKA_WORKDIR
+        always-pull: true
+        debug: true
+    timeout: 60
+    retry:
+      automatic:
+        # Agent was lost
+        - exit_status: -1
+          limit: 2
+        # Forced agent shutdown
+        - exit_status: 255
+          limit: 2
