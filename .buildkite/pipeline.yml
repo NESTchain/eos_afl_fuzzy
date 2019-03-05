@@ -36,9 +36,8 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "df -h"
-      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-5f3c25a6-b981-426c-b397-68b029a6e385.tar.gz && cd build"
-      - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
+      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-5f3c25a6-b981-426c-b397-68b029a6e385.tar.gz"
+      - "cd build && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
       - "build/genesis.json"
