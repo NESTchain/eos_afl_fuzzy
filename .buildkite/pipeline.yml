@@ -38,7 +38,7 @@ steps:
   - label: ":darwin: High Sierra Tests"
     command:
       - "pwd"
-      - "ls -laht /private/var/tmp/ankafs.0/build/unittests/unit_test"
+      - "ls -laht /private/var/tmp/ankafs.0/"
       - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-7bdae412-2b7c-47bb-a83e-8067756de774.tar.gz && cd build"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
