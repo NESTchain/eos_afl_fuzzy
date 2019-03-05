@@ -1,7 +1,8 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-3
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-4
+  # ~/.buildkite-agent/builds/ on the host uses the agent name. This becomes a problem when subsequent steps run from different agents and files like build/libraries/wabt/CMakeFiles/wabt.dir/build.make use a path with the agent name in it. To prevent this, we'll use /data/job
   ANKA_WORKDIR: /data/job
 
 steps:
@@ -20,6 +21,7 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
+        workdir: $ANKA_WORKDIR
         always-pull: true
         debug: true
     agents:
@@ -50,6 +52,7 @@ steps:
       chef/anka#v0.1.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
+        workdir: $ANKA_WORKDIR
         always-pull: true
         debug: true
     timeout: 60
