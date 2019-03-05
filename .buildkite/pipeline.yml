@@ -38,7 +38,8 @@ steps:
   - label: ":darwin: High Sierra Tests"
     command:
       - "pwd"
-      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-7bdae412-2b7c-47bb-a83e-8067756de774.tar.gz && cd build && cat build/libraries/wabt/CMakeFiles/wabt.dir/build.make"
+      - "ls -laht"
+      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-7bdae412-2b7c-47bb-a83e-8067756de774.tar.gz && cd build && cat libraries/wabt/CMakeFiles/wabt.dir/build.make"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
