@@ -36,7 +36,7 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "ls -alht /Network/AFP/NAS/buildkite-artifacts"
+      - "df -h"
       - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-5f3c25a6-b981-426c-b397-68b029a6e385.tar.gz && cd build"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
