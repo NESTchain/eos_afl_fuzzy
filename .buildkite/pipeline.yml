@@ -10,30 +10,30 @@ steps:
   # You can look for problems using yamllint: brew install yamllint
   # Artifact storage is available through clean-nas images; mounted NAS located in /Network/AFP/NAS
 
-  - label: ":darwin: High Sierra Build"
-    command:
-      - "./scripts/eosio_build.sh -y"
-      - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
-    plugins:
-      chef/anka#v0.2.0:
-        vm-name: $ANKA_IMAGE_NAME
-        vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: $ANKA_WORKDIR
-        always-pull: true
-        debug: true
-    agents:
-      - "role=anka-tester"
-    timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
+  # - label: ":darwin: High Sierra Build"
+  #   command:
+  #     - "./scripts/eosio_build.sh -y"
+  #     - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
+  #   plugins:
+  #     chef/anka#v0.2.0:
+  #       vm-name: $ANKA_IMAGE_NAME
+  #       vm-registry-tag: $ANKA_IMAGE_TAG
+  #       workdir: $ANKA_WORKDIR
+  #       always-pull: true
+  #       debug: true
+  #   agents:
+  #     - "role=anka-tester"
+  #   timeout: 60
+  #   retry:
+  #     automatic:
+  #       # Agent was lost
+  #       - exit_status: -1
+  #         limit: 2
+  #       # Forced agent shutdown
+  #       - exit_status: 255
+  #         limit: 2
 
-  - wait
+  # - wait
 
   - label: ":darwin: High Sierra Tests"
     command:
