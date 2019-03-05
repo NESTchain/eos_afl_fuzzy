@@ -2,7 +2,6 @@
 env:
   ANKA_IMAGE_NAME: high-sierra
   ANKA_IMAGE_TAG: clean-nas-eosio-v2-4
-  # Folders under ~/.buildkite-agent/builds/ on the host have the agent name. This becomes a problem when subsequent steps run and a build sets a path with the agent name (files like build/libraries/wabt/CMakeFiles/wabt.dir/build.make in eosio). To prevent this, we'll use /data/job
   ANKA_WORKDIR: /data/job
 
 steps:
@@ -37,7 +36,8 @@ steps:
 
   - label: ":darwin: High Sierra Tests"
     command:
-      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz && cd build"
+      - "ls -alht /Network/AFP/NAS/buildkite-artifacts"
+      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-5f3c25a6-b981-426c-b397-68b029a6e385.tar.gz && cd build"
       - "PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "var/log/mongodb/mongod.log"
