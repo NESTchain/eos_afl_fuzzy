@@ -2,7 +2,7 @@
 env:
   ANKA_IMAGE_NAME: high-sierra
   ANKA_IMAGE_TAG: clean-nas-eosio-v2-4
-  # ~/.buildkite-agent/builds/ on the host uses the agent name. This becomes a problem when subsequent steps run from different agents and files like build/libraries/wabt/CMakeFiles/wabt.dir/build.make use a path with the agent name in it. To prevent this, we'll use /data/job
+  # Folders under ~/.buildkite-agent/builds/ on the host have the agent name. This becomes a problem when subsequent steps run and a build sets a path with the agent name (files like build/libraries/wabt/CMakeFiles/wabt.dir/build.make in eosio). To prevent this, we'll use /data/job
   ANKA_WORKDIR: /data/job
 
 steps:
@@ -12,9 +12,6 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "df -h"
-      - "pwd"
-      - "ls -laht"
       - "./scripts/eosio_build.sh -y"
       - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
