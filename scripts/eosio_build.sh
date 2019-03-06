@@ -90,6 +90,10 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT="${SCRIPT_DIR}/.."
 BUILD_DIR="${REPO_ROOT}/build"
 
+echo "SCRIPT_DIR: ${SCRIPT_DIR}"
+echo "REPO_ROOT: ${REPO_ROOT}"
+echo "BUILD_DIR: ${BUILD_DIR}"
+
 # Use current directory's tmp directory if noexec is enabled for /tmp
 if (mount | grep "/tmp " | grep --quiet noexec); then
       mkdir -p $REPO_ROOT/tmp
