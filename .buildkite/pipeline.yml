@@ -49,7 +49,6 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: $ANKA_WORKDIR
         wait-network: true
         no-volume: true
         # always-pull: true
@@ -78,7 +77,6 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: $ANKA_WORKDIR
         wait-network: true
         no-volume: true
         # always-pull: true
