@@ -18,6 +18,7 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
+        wait-network: true
         # always-pull: true
         debug: true
     agents:
@@ -49,6 +50,8 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
+        wait-network: true
+        no-volume: true
         # always-pull: true
         debug: true
     timeout: 60
@@ -76,6 +79,8 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
+        wait-network: true
+        no-volume: true
         # always-pull: true
         debug: true
     timeout: 60
