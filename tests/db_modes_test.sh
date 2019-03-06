@@ -36,7 +36,7 @@ NODEOS_LAUNCH_PARAMS="./programs/nodeos/nodeos -d $EOSIO_STUFF_DIR --config-dir 
 
 run_nodeos() {
    if (( $VERBOSE == 0 )); then
-      $NODEOS_LAUNCH_PARAMS "$@" 2>/dev/null &
+      $NODEOS_LAUNCH_PARAMS "$@" &
    else
       $NODEOS_LAUNCH_PARAMS "$@" &
    fi
