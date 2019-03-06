@@ -17,7 +17,6 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: $ANKA_WORKDIR
         wait-network: true
         # always-pull: true
         debug: true
@@ -51,7 +50,6 @@ steps:
         vm-registry-tag: $ANKA_IMAGE_TAG
         wait-network: true
         # Tests don't need the eosio directory mounted from the host
-        no-volume: true 
         always-pull: true
         debug: true
     timeout: 60
@@ -79,7 +77,7 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         wait-network: true
-        no-volume: true
+        # Tests don't need the eosio directory mounted from the host
         always-pull: true
         debug: true
     timeout: 60
