@@ -50,8 +50,9 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         wait-network: true
-        no-volume: true
-        # always-pull: true
+        # Tests don't need the eosio directory mounted from the host
+        no-volume: true 
+        always-pull: true
         debug: true
     timeout: 60
     retry:
@@ -79,7 +80,7 @@ steps:
         vm-registry-tag: $ANKA_IMAGE_TAG
         wait-network: true
         no-volume: true
-        # always-pull: true
+        always-pull: true
         debug: true
     timeout: 60
     retry:
