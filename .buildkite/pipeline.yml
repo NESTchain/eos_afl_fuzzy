@@ -1,7 +1,7 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-6
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-7
   ANKA_WORKDIR: /data/job
 
 steps:
@@ -11,13 +11,12 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "./scripts/eosio_build.sh -y"
+      - "cd /data/job && ./scripts/eosio_build.sh -y"
       - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        wait-network: true
         # always-pull: true
         debug: true
     agents:
@@ -48,7 +47,8 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        wait-network: true
+        workdir: $ANKA_WORKDIR
+        no-volume: true
         # Tests don't need the eosio directory mounted from the host
         always-pull: true
         debug: true
@@ -76,7 +76,8 @@ steps:
       chef/anka#v0.2.0:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        wait-network: true
+        workdir: $ANKA_WORKDIR
+        no-volume: true
         cleanup: false
         # Tests don't need the eosio directory mounted from the host
         always-pull: true
