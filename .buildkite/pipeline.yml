@@ -18,7 +18,7 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
-        always-pull: true
+        # always-pull: true
         debug: true
     agents:
       - "role=anka-tester"
@@ -49,7 +49,7 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
-        always-pull: true
+        # always-pull: true
         debug: true
     timeout: 60
     retry:
@@ -76,7 +76,7 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
-        always-pull: true
+        # always-pull: true
         debug: true
     timeout: 60
     retry:
