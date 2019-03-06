@@ -36,7 +36,7 @@ steps:
   - label: ":darwin: High Sierra Tests"
     command:
       - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-a3d03581-d1dc-4a3c-a4f8-79ede9412a1f.tar.gz"
-      - "cd build && ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
+      - "cat /private/var/tmp/ankafs.0/build/tests/db_modes_test.sh && cd build && ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
     artifact_paths:
       - "build/mongod.log"
       - "build/genesis.json"
