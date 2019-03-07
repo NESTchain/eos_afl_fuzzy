@@ -22,73 +22,73 @@ steps:
     agents:
       - "role=anka-tester"
     timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
+    # retry:
+    #   automatic:
+    #     # Agent was lost
+    #     - exit_status: -1
+    #       limit: 2
+    #     # Forced agent shutdown
+    #     - exit_status: 255
+    #       limit: 2
 
-  - wait
+#   - wait
 
-  - label: ":darwin: High Sierra Tests"
-    command:
-      - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
-      - "cat /private/var/tmp/ankafs.0/build/tests/db_modes_test.sh && cd build && ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
-    artifact_paths:
-      - "build/mongod.log"
-      - "build/genesis.json"
-      - "build/config.ini"
-    agents:
-      - "role=anka-tester"
-    plugins:
-      chef/anka#v0.2.0:
-        vm-name: $ANKA_IMAGE_NAME
-        vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: $ANKA_WORKDIR
-        no-volume: true
-        # Tests don't need the eosio directory mounted from the host
-        always-pull: true
-        debug: true
-    timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
+#   - label: ":darwin: High Sierra Tests"
+#     command:
+#       - "tar -xzf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
+#       - "cat /private/var/tmp/ankafs.0/build/tests/db_modes_test.sh && cd build && ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log && PATH=$PATH:~/opt/mongodb/bin ctest -j8 -LE _tests --output-on-failure"
+#     artifact_paths:
+#       - "build/mongod.log"
+#       - "build/genesis.json"
+#       - "build/config.ini"
+#     agents:
+#       - "role=anka-tester"
+#     plugins:
+#       chef/anka#v0.2.0:
+#         vm-name: $ANKA_IMAGE_NAME
+#         vm-registry-tag: $ANKA_IMAGE_TAG
+#         workdir: $ANKA_WORKDIR
+#         no-volume: true
+#         # Tests don't need the eosio directory mounted from the host
+#         always-pull: true
+#         debug: true
+#     timeout: 60
+#     retry:
+#       automatic:
+#         # Agent was lost
+#         - exit_status: -1
+#           limit: 2
+#         # Forced agent shutdown
+#         - exit_status: 255
+#           limit: 2
 
-  - label: ":darwin: High Sierra NP Tests"
-    command:
-      - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
-      - "cd build && ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
-    artifact_paths:
-      - "build/mongod.log"
-      - "build/genesis.json"
-      - "build/config.ini"
-    agents:
-      - "role=anka-tester"
-    plugins:
-      chef/anka#v0.2.0:
-        vm-name: $ANKA_IMAGE_NAME
-        vm-registry-tag: $ANKA_IMAGE_TAG
-        workdir: $ANKA_WORKDIR
-        no-volume: true
-        # Tests don't need the eosio directory mounted from the host
-        always-pull: true
-        debug: true
-    timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
+#   - label: ":darwin: High Sierra NP Tests"
+#     command:
+#       - "tar -zxf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz"
+#       - "cd build && ~/bin/mongod --fork --dbpath ~/data/mongodb -f ~/etc/mongod.conf --logpath ./mongod.log && PATH=$PATH:~/opt/mongodb/bin ctest -L nonparallelizable_tests --output-on-failure"
+#     artifact_paths:
+#       - "build/mongod.log"
+#       - "build/genesis.json"
+#       - "build/config.ini"
+#     agents:
+#       - "role=anka-tester"
+#     plugins:
+#       chef/anka#v0.2.0:
+#         vm-name: $ANKA_IMAGE_NAME
+#         vm-registry-tag: $ANKA_IMAGE_TAG
+#         workdir: $ANKA_WORKDIR
+#         no-volume: true
+#         # Tests don't need the eosio directory mounted from the host
+#         always-pull: true
+#         debug: true
+#     timeout: 60
+#     retry:
+#       automatic:
+#         # Agent was lost
+#         - exit_status: -1
+#           limit: 2
+#         # Forced agent shutdown
+#         - exit_status: 255
+#           limit: 2
 
-# Cleanup should be a cron that runs daily
+# # Cleanup should be a cron that runs daily
