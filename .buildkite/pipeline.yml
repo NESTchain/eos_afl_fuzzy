@@ -11,7 +11,8 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "exit 234"
+      - "cd /data/job && ./scripts/eosio_build.sh -y"
+      - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
       chef/anka#v0.3.0:
         vm-name: $ANKA_IMAGE_NAME
