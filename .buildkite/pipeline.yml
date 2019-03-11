@@ -1,7 +1,7 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-7
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-8
   ANKA_WORKDIR: /data/job
 
 steps:
