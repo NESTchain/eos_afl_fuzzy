@@ -11,8 +11,7 @@ steps:
 
   - label: ":darwin: High Sierra Build"
     command:
-      - "ls -laht"
-      #- "cd /data/job && ./scripts/eosio_build.sh -y"
+      - "cd /data/job && ./scripts/eosio_build.sh -y"
       # - "tar -pczf /Network/AFP/NAS/buildkite-artifacts/build-$BUILDKITE_BUILD_ID.tar.gz build"
     plugins:
       chef/anka#v0.3.1:
