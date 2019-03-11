@@ -19,7 +19,7 @@ steps:
         vm-registry-tag: $ANKA_IMAGE_TAG
         workdir: $ANKA_WORKDIR
         cleanup: false
-        always-pull: true
+        always-pull: "shrink"
         debug: true
     agents:
       - "role=anka-tester"
