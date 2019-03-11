@@ -1,7 +1,7 @@
 ---
 env:
   ANKA_IMAGE_NAME: high-sierra
-  ANKA_IMAGE_TAG: clean-nas-eosio-v2-9
+  ANKA_IMAGE_TAG: clean-nas-eosio-v2-0
   ANKA_WORKDIR: /data/job
 
 steps:
@@ -18,8 +18,8 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         cleanup: false
-        # always-pull: true
-        # debug: true
+        always-pull: true
+        debug: true
     agents:
       - "role=anka-tester"
     timeout: 60
