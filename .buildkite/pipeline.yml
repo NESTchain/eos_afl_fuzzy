@@ -18,7 +18,7 @@ steps:
       chef/anka#v0.3.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        # cleanup: false
+        cleanup: false
         # always-pull: "shrink"
         debug: true
     agents:
