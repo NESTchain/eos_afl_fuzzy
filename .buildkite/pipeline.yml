@@ -18,7 +18,7 @@ steps:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
         cleanup: false
-        # always-pull: true
+        always-pull: true
         debug: true
     agents:
       - "role=anka-tester"
