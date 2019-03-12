@@ -199,6 +199,7 @@ chain_plugin::chain_plugin()
 :my(new chain_plugin_impl()) {
    app().register_config_type<eosio::chain::db_read_mode>();
    app().register_config_type<eosio::chain::validation_mode>();
+   app().register_config_type<chainbase::pinnable_mapped_file::map_mode>();
 }
 
 chain_plugin::~chain_plugin(){}
@@ -250,6 +251,19 @@ void chain_plugin::set_program_options(options_description& cli, options_descrip
          ("disable-ram-billing-notify-checks", bpo::bool_switch()->default_value(false),
           "Disable the check which subjectively fails a transaction if a contract bills more RAM to another account within the context of a notification handler (i.e. when the receiver is not the code of the action).")
          ("trusted-producer", bpo::value<vector<string>>()->composing(), "Indicate a producer whose blocks headers signed by it will be fully validated, but transactions in those validated blocks will be trusted.")
+         ("database-map-mode", bpo::value<chainbase::pinnable_mapped_file::map_mode>()->default_value(chainbase::pinnable_mapped_file::map_mode::mapped),
+          "Database map mode (\"mapped\", \"heap\", or \"locked\").\n"
+          "In \"mapped\" mode database is memory mapped as a file.\n"
+          "In \"heap\" mode database is preloaded in to swappable memory.\n"
+#ifdef __linux__
+          "In \"locked\" mode database is preloaded, locked in to memory, and optionally can use huge pages.\n"
+#else
+          "In \"locked\" mode database is preloaded and locked in to memory.\n"
+#endif
+         )
+#ifdef __linux__
+         ("database-hugepage-path", bpo::value<vector<string>>()->composing(), "Optional path for database hugepages when in \"locked\" mode (may specify multiple times)")
+#endif
          ;
 
 // TODO: rate limiting
@@ -504,8 +518,6 @@ void chain_plugin::plugin_initialize(const variables_map& options) {
                          my->chain_config->blocks_dir / config::reversible_blocks_dir_name );
                fc::copy( backup_dir / config::reversible_blocks_dir_name / "shared_memory.bin",
                          my->chain_config->blocks_dir / config::reversible_blocks_dir_name / "shared_memory.bin" );
-               fc::copy( backup_dir / config::reversible_blocks_dir_name / "shared_memory.meta",
-                         my->chain_config->blocks_dir / config::reversible_blocks_dir_name / "shared_memory.meta" );
             }
          }
       } else if( options.at( "replay-blockchain" ).as<bool>()) {
@@ -650,6 +662,12 @@ void chain_plugin::plugin_initialize(const variables_map& options) {
       if ( options.count("validation-mode") ) {
          my->chain_config->block_validation_mode = options.at("validation-mode").as<validation_mode>();
       }
+
+      my->chain_config->db_map_mode = options.at("database-map-mode").as<pinnable_mapped_file::map_mode>();
+#ifdef __linux__
+      if( options.count("database-hugepage-path") )
+         my->chain_config->db_hugepage_paths = options.at("database-hugepage-path").as<std::vector<std::string>>();
+#endif
 
       my->chain.emplace( *my->chain_config );
       my->chain_id.emplace( my->chain->get_chain_id());
@@ -1106,7 +1124,7 @@ uint64_t convert_to_type(const string& str, const string& desc) {
    try {
       return boost::lexical_cast<uint64_t>(str.c_str(), str.size());
    } catch( ... ) { }
-   
+
    try {
       auto trimmed_str = str;
       boost::trim(trimmed_str);
@@ -1120,7 +1138,7 @@ uint64_t convert_to_type(const string& str, const string& desc) {
          return symb.value();
       } catch( ... ) { }
    }
-   
+
    try {
       return ( eosio::chain::string_to_symbol( 0, str.c_str() ) >> 8 );
    } catch( ... ) {
@@ -1511,14 +1529,24 @@ read_only::get_scheduled_transactions( const read_only::get_scheduled_transactio
 
 fc::variant read_only::get_block(const read_only::get_block_params& params) const {
    signed_block_ptr block;
-   EOS_ASSERT(!params.block_num_or_id.empty() && params.block_num_or_id.size() <= 64, chain::block_id_type_exception, "Invalid Block number or ID, must be greater than 0 and less than 64 characters" );
-   try {
-      block = db.fetch_block_by_id(fc::variant(params.block_num_or_id).as<block_id_type>());
-      if (!block) {
-         block = db.fetch_block_by_number(fc::to_uint64(params.block_num_or_id));
-      }
+   optional<uint64_t> block_num;
 
-   } EOS_RETHROW_EXCEPTIONS(chain::block_id_type_exception, "Invalid block ID: ${block_num_or_id}", ("block_num_or_id", params.block_num_or_id))
+   EOS_ASSERT( !params.block_num_or_id.empty() && params.block_num_or_id.size() <= 64,
+               chain::block_id_type_exception,
+               "Invalid Block number or ID, must be greater than 0 and less than 64 characters"
+   );
+
+   try {
+      block_num = fc::to_uint64(params.block_num_or_id);
+   } catch( ... ) {}
+
+   if( block_num.valid() ) {
+      block = db.fetch_block_by_number( *block_num );
+   } else {
+      try {
+         block = db.fetch_block_by_id( fc::variant(params.block_num_or_id).as<block_id_type>() );
+      } EOS_RETHROW_EXCEPTIONS(chain::block_id_type_exception, "Invalid block ID: ${block_num_or_id}", ("block_num_or_id", params.block_num_or_id))
+   }
 
    EOS_ASSERT( block, unknown_block_exception, "Could not find block: ${block}", ("block", params.block_num_or_id));
 
