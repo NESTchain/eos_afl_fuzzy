@@ -18,8 +18,8 @@ steps:
       chef/anka#v0.3.1:
         vm-name: $ANKA_IMAGE_NAME
         vm-registry-tag: $ANKA_IMAGE_TAG
-        cleanup: false
         always-pull: "shrink"
+        cleanup: false
         debug: true
     agents:
       - "role=anka-tester"
@@ -52,17 +52,9 @@ steps:
         workdir: $ANKA_WORKDIR
         no-volume: true
         # Tests don't need the eosio directory mounted from the host
-        always-pull: true
+        always-pull: "shrink"
         debug: true
     timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
 
   - label: ":darwin: High Sierra NP Tests"
     command:
@@ -81,16 +73,8 @@ steps:
         workdir: $ANKA_WORKDIR
         no-volume: true
         # Tests don't need the eosio directory mounted from the host
-        always-pull: true
+        always-pull: "shrink"
         debug: true
     timeout: 60
-    retry:
-      automatic:
-        # Agent was lost
-        - exit_status: -1
-          limit: 2
-        # Forced agent shutdown
-        - exit_status: 255
-          limit: 2
 
 # # Cleanup should be a cron that runs daily
