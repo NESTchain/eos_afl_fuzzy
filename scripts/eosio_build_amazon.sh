@@ -46,20 +46,21 @@ then
 	exit 1
 fi
 printf "Yum installation found at ${YUM}.\\n"
-
-if [ $ANSWER != 1 ]; then read -p "Do you wish to update YUM repositories? (y/n) " ANSWER; fi
-case $ANSWER in
-	1 | [Yy]* )
-		if ! sudo $YUM -y update; then
-			printf " - YUM update failed.\\n"
-			exit 1;
-		else
-			printf " - YUM update complete.\\n"
-		fi
-	;;
-	[Nn]* ) echo " - Proceeding without update!";;
-	* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-esac
+while true; do
+	if [ $ANSWER != 1 ]; then read -p "Do you wish to update YUM repositories? (y/n) " ANSWER; fi
+	case $ANSWER in
+		1 | [Yy]* )
+			if ! sudo $YUM -y update; then
+				printf " - YUM update failed.\\n"
+				exit 1;
+			else
+				printf " - YUM update complete.\\n"
+			fi
+		;;
+		[Nn]* ) echo " - Proceeding without update!";;
+		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+	esac
+done
 
 printf "Checking RPM for installed dependencies...\\n"
 for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
@@ -77,19 +78,21 @@ done
 if [ "${COUNT}" -gt 1 ]; then
 	printf "\\nThe following dependencies are required to install EOSIO:\\n"
 	printf "${DISPLAY}\\n\\n"
-	if [ $ANSWER != 1 ]; then read -p "Do you wish to install these dependencies? (y/n) " ANSWER; fi
-	case $ANSWER in
-		1 | [Yy]* )
-			if ! sudo $YUM -y install ${DEP}; then
-				printf " - YUM dependency installation failed!\\n"
-				exit 1;
-			else
-				printf " - YUM dependencies installed successfully.\\n"
-			fi
-		;;
-		[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
-		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-	esac
+	while true; do
+		if [ $ANSWER != 1 ]; then read -p "Do you wish to install these dependencies? (y/n) " ANSWER; fi
+		case $ANSWER in
+			1 | [Yy]* )
+				if ! sudo $YUM -y install ${DEP}; then
+					printf " - YUM dependency installation failed!\\n"
+					exit 1;
+				else
+					printf " - YUM dependencies installed successfully.\\n"
+				fi
+			;;
+			[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
+			* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+		esac
+	done
 else
 	printf " - No required YUM dependencies to install.\\n"
 fi

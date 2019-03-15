@@ -81,20 +81,21 @@ DEP=""
 if [[ "${ENABLE_CODE_COVERAGE}" == true ]]; then
 	DEP_ARRAY+=(lcov)
 fi
-
-if [ $ANSWER != 1 ]; then read -p "Do you wish to update repositories with apt-get update? (y/n) " ANSWER; fi
-case $ANSWER in
-	1 | [Yy]* )
-		if ! sudo apt-get update; then
-			printf " - APT update failed.\\n"
-			exit 1;
-		else
-			printf " - APT update complete.\\n"
-		fi
-	;;
-	[Nn]* ) echo "Proceeding without update!";;
-	* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-esac
+while true; do
+	if [ $ANSWER != 1 ]; then read -p "Do you wish to update repositories with apt-get update? (y/n) " ANSWER; fi
+	case $ANSWER in
+		1 | [Yy]* )
+			if ! sudo apt-get update; then
+				printf " - APT update failed.\\n"
+				exit 1;
+			else
+				printf " - APT update complete.\\n"
+			fi
+		;;
+		[Nn]* ) echo "Proceeding without update!";;
+		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+	esac
+done
 
 printf "\\nChecking for installed dependencies...\\n"
 for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
@@ -111,20 +112,22 @@ for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
 done
 if [ "${COUNT}" -gt 1 ]; then
 	printf "\\nThe following dependencies are required to install EOSIO:\\n"
-	printf "${DISPLAY}\\n\\n" 
-	if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
-	case $ANSWER in
-		1 | [Yy]* )
-			if ! sudo apt-get -y install ${DEP}; then
-				printf " - APT dependency failed.\\n"
-				exit 1
-			else
-				printf " - APT dependencies installed successfully.\\n"
-			fi
-		;;
-		[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
-		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-	esac
+	printf "${DISPLAY}\\n\\n"
+	while true; do
+		if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
+		case $ANSWER in
+			1 | [Yy]* )
+				if ! sudo apt-get -y install ${DEP}; then
+					printf " - APT dependency failed.\\n"
+					exit 1
+				else
+					printf " - APT dependencies installed successfully.\\n"
+				fi
+			;;
+			[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
+			* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+		esac
+	done
 else 
 	printf " - No required APT dependencies to install.\\n"
 fi

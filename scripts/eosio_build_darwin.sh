@@ -72,21 +72,22 @@ printf "Checking Home Brew installation...\\n"
 if ! BREW=$( command -v brew )
 then
 	printf "Homebrew must be installed to compile EOS.IO!\\n"
-	if [ $ANSWER != 1 ]; then read -p "Do you wish to install HomeBrew? (y/n)? " ANSWER; fi
-	case $ANSWER in
-		1 | [Yy]* )
-			"${XCODESELECT}" --install 2>/dev/null;
-			if ! "${RUBY}" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"; then
-				echo " - Unable to install homebrew at this time."
-				exit 1;
-			else
-				BREW=$( command -v brew )
-			fi
-		;;
-		[Nn]* ) echo "User aborted homebrew installation. Exiting now."; exit 1;;
-		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-	esac
-
+	while true; do
+		if [ $ANSWER != 1 ]; then read -p "Do you wish to install HomeBrew? (y/n)? " ANSWER; fi
+		case $ANSWER in
+			1 | [Yy]* )
+				"${XCODESELECT}" --install 2>/dev/null;
+				if ! "${RUBY}" -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"; then
+					echo " - Unable to install homebrew at this time."
+					exit 1;
+				else
+					BREW=$( command -v brew )
+				fi
+			;;
+			[Nn]* ) echo "User aborted homebrew installation. Exiting now."; exit 1;;
+			* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+		esac
+	done
 fi
 printf " - Home Brew installation found @ ${BREW}\\n"
 
@@ -121,39 +122,41 @@ fi
 if [ $COUNT -gt 1 ]; then
 	printf "\\nThe following dependencies are required to install EOSIO:\\n"
 	printf "${DISPLAY}\\n\\n"
-	if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
-	case $ANSWER in
-		1 | [Yy]* )
-			"${XCODESELECT}" --install 2>/dev/null;
-			if [ $1 == 0 ]; then read -p "Do you wish to update homebrew packages first? (y/n) " ANSWER; fi
-			case $ANSWER in
-				1 | [Yy]* )
-					if ! brew update; then
-						printf " - Brew update failed.\\n"
+	while true; do
+		if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
+		case $ANSWER in
+			1 | [Yy]* )
+				"${XCODESELECT}" --install 2>/dev/null;
+				if [ $1 == 0 ]; then read -p "Do you wish to update homebrew packages first? (y/n) " ANSWER; fi
+				case $ANSWER in
+					1 | [Yy]* )
+						if ! brew update; then
+							printf " - Brew update failed.\\n"
+							exit 1;
+						else
+							printf " - Brew update complete.\\n"
+						fi
+					;;
+					[Nn]* ) echo "Proceeding without update!";;
+					* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+				esac
+				brew tap eosio/eosio
+				printf "\\nInstalling Dependencies...\\n"
+				OIFS="$IFS"
+				IFS=$','
+				for DEP in $DEPS; do
+					# Eval to support string/arguments with $DEP
+					if ! eval $BREW install $DEP; then
+						printf " - Homebrew exited with the above errors!\\n"
 						exit 1;
-					else
-						printf " - Brew update complete.\\n"
 					fi
-				;;
-				[Nn]* ) echo "Proceeding without update!";;
-				* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-			esac
-			brew tap eosio/eosio
-			printf "\\nInstalling Dependencies...\\n"
-			OIFS="$IFS"
-			IFS=$','
-			for DEP in $DEPS; do
-				# Eval to support string/arguments with $DEP
-				if ! eval $BREW install $DEP; then
-					printf " - Homebrew exited with the above errors!\\n"
-					exit 1;
-				fi
-			done
-			IFS="$OIFS"
-		;;
-		[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
-		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-	esac
+				done
+				IFS="$OIFS"
+			;;
+			[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
+			* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+		esac
+	done
 else
 	printf " - No required Home Brew dependencies to install.\\n"
 fi
