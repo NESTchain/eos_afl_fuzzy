@@ -108,7 +108,37 @@ namespace Runtime
 		//Previously, the module instantiation would write in to the memoryInstance here. Don't do that
       //since the memoryInstance is shared across all moduleInstances and we could be compiling
       //a new instance while another instance is running
-		
+
+        // Copy the module's data segments into their designated memory instances.
+        for(const DataSegment& dataSegment : module.dataSegments)
+        {
+            MemoryInstance* memory = moduleInstance->memories[dataSegment.memoryIndex];
+
+            const Value baseOffsetValue
+                = evaluateInitializer(moduleInstance, dataSegment.baseOffset);
+            errorUnless(baseOffsetValue.type == ValueType::i32);
+            const U32 baseOffset = baseOffsetValue.i32;
+
+            if(dataSegment.data.size())
+            {
+                if (baseOffset > memory->numPages * IR::numBytesPerPage
+                    || (baseOffset + dataSegment.data.size()) > (memory->numPages * IR::numBytesPerPage)
+                    || baseOffset + dataSegment.data.size() < baseOffset)
+                {
+                    causeException(Exception::Cause::outOfMemory);
+                }
+
+                memcpy(memory->baseAddress + baseOffset, dataSegment.data.data(), dataSegment.data.size());
+            }
+            else
+            {
+                // WebAssembly still expects out-of-bounds errors if the segment base offset is
+                // out-of-bounds, even if the segment is empty.
+                if(baseOffset > memory->numPages * IR::numBytesPerPage)
+                    causeException(Exception::Cause::outOfMemory);
+            }
+        }
+
 		// Instantiate the module's global definitions.
 		for(const GlobalDef& globalDef : module.globals.defs)
 		{

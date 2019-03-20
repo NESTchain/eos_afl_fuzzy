@@ -21,7 +21,7 @@ cmake ${WAVM} -DENABLE_ASAN=1 -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make -j
 
 # Set up ASAN to ignore seg faults, ignore leaks, and abort on error.
-export ASAN_OPTIONS=handle_segv=0:detect_leaks=0:abort_on_error=1
+export ASAN_OPTIONS=handle_segv=0:detect_leaks=0:abort_on_error=1:symbolize=0
 
 # Make a ramdisk to hold the AFL temp files.
 if [ ! -d $TMPDIR ] ; then
@@ -38,7 +38,7 @@ CORPUS=${TMPDIR}/corpus
 mkdir -p $CORPUS
 rm -rf ${CORPUS}/*
 for wast in ${CORPUS_SRC}/*.wast; do
-	${WAVM_BIN}/Assemble $wast ${CORPUS}/$(basename $wast).wasm
+	${WAVM_BIN}/eosio-wast2wasm $wast ${CORPUS}/$(basename $wast).wasm
 done
 
 # Spawn the slave fuzzers

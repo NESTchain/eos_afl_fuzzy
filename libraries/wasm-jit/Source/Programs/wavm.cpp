@@ -203,6 +203,23 @@ int mainBody(const char* filename,const char* functionName,bool onlyCheck,char**
 	else { return EXIT_SUCCESS; }
 }
 
+DEFINE_INTRINSIC_FUNCTION0(spectest,spectest_print,print,none) {}
+DEFINE_INTRINSIC_FUNCTION1(spectest,spectest_print,print,none,i32,a) { std::cout << a << " : i32" << std::endl; }
+DEFINE_INTRINSIC_FUNCTION1(spectest,spectest_print,print,none,i64,a) { std::cout << a << " : i64" << std::endl; }
+DEFINE_INTRINSIC_FUNCTION1(spectest,spectest_print,print,none,f32,a) { std::cout << a << " : f32" << std::endl; }
+DEFINE_INTRINSIC_FUNCTION1(spectest,spectest_print,print,none,f64,a) { std::cout << a << " : f64" << std::endl; }
+DEFINE_INTRINSIC_FUNCTION2(spectest,spectest_print,print,none,f64,a,f64,b) { std::cout << a << " : f64" << std::endl << b << " : f64" << std::endl; }
+DEFINE_INTRINSIC_FUNCTION2(spectest,spectest_print,print,none,i32,a,f32,b) { std::cout << a << " : i32" << std::endl << b << " : f32" << std::endl; }
+DEFINE_INTRINSIC_FUNCTION2(spectest,spectest_print,print,none,i64,a,f64,b) { std::cout << a << " : i64" << std::endl << b << " : f64" << std::endl; }
+
+DEFINE_INTRINSIC_GLOBAL(spectest,spectest_globalI32,global,i32,false,666)
+DEFINE_INTRINSIC_GLOBAL(spectest,spectest_globalI64,global,i64,false,0)
+DEFINE_INTRINSIC_GLOBAL(spectest,spectest_globalF32,global,f32,false,0.0f)
+DEFINE_INTRINSIC_GLOBAL(spectest,spectest_globalF64,global,f64,false,0.0)
+
+DEFINE_INTRINSIC_TABLE(spectest,spectest_table,table,TableType(TableElementType::anyfunc,false,SizeConstraints {10,20}))
+DEFINE_INTRINSIC_MEMORY(spectest,spectest_memory,memory,MemoryType(false,SizeConstraints {1,2}))
+
 int commandMain(int argc,char** argv)
 {
 	const char* filename = nullptr;
@@ -223,7 +240,9 @@ int commandMain(int argc,char** argv)
 		}
 		else if(!strcmp(*args, "--debug") || !strcmp(*args, "-d"))
 		{
+            Log::setCategoryEnabled(Log::Category::error,true);
 			Log::setCategoryEnabled(Log::Category::debug,true);
+            Log::setCategoryEnabled(Log::Category::metrics,true);
 		}
 		else if(!strcmp(*args, "--"))
 		{

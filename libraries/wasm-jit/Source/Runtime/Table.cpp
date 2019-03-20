@@ -18,8 +18,10 @@ namespace Runtime
 	{
 		TableInstance* table = new TableInstance(type);
 
-		const Uptr tableMaxBytes = sizeof(TableInstance::FunctionElement)*eosio::chain::wasm_constraints::maximum_table_elements;
-		
+        WAVM_ASSERT_THROW(type.size.min <= eosio::chain::wasm_constraints::maximum_table_elements);
+
+        const Uptr tableMaxBytes = sizeof(TableInstance::FunctionElement) * eosio::chain::wasm_constraints::maximum_table_elements;
+
 		const Uptr alignmentBytes = 1U << Platform::getPageSizeLog2();
 		table->baseAddress = (TableInstance::FunctionElement*)allocateVirtualPagesAligned(tableMaxBytes,alignmentBytes,table->reservedBaseAddress,table->reservedNumPlatformPages);
 		table->endOffset = tableMaxBytes;

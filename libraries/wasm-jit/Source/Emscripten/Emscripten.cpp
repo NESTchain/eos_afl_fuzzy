@@ -36,7 +36,7 @@ namespace Emscripten
 	DEFINE_INTRINSIC_GLOBAL(env,_stdout,_stdout,i32,false,0);
 
 	DEFINE_INTRINSIC_MEMORY(env,emscriptenMemory,memory,MemoryType(false,SizeConstraints({256,UINT64_MAX})));
-	DEFINE_INTRINSIC_TABLE(env,table,table,TableType(TableElementType::anyfunc,false,SizeConstraints({1024*1024,UINT64_MAX})));
+    DEFINE_INTRINSIC_TABLE(env,table,table,TableType(TableElementType::anyfunc,false,SizeConstraints({1024,UINT64_MAX})));
 
 	DEFINE_INTRINSIC_GLOBAL(env,memoryBase,memoryBase,i32,false,1024);
 	DEFINE_INTRINSIC_GLOBAL(env,tableBase,tableBase,i32,false,0);
