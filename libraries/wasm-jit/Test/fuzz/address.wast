@@ -25,6 +25,6 @@
   (func (export "main")
     (call $good (i32.const 0))
     (call $good (i32.const 65507))
-    (call $good (i32.const 65508))
+;;    (call $good (i32.const 65508))
     )
 )
