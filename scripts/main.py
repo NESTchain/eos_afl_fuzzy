@@ -9,38 +9,6 @@ import platform
 import asyncio
 import concurrent.futures
 
-wavm_results = {}
-
-async def run_command2(n, *args):
-    my_env = { **os.environ, 'LIBC_FATAL_STDERR_': 'yes' }  # libc default prints error messages to /dev/tty
-    process = await asyncio.create_subprocess_exec(
-        *args,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE, env = my_env)
-
-    # print('Started: ', n, ', ', args, '(pid = ' + str(process.pid) + ')')
-
-    future = asyncio.ensure_future(process.communicate())
-    done, pending = await asyncio.wait([future], timeout = 5)
-    if pending:
-        if process.returncode is None:
-            print("timeout, killing process: ", args[1])
-            try:
-                process.kill()
-            except ProcessLookupError:
-                pass
-
-    stdout, stderr = await future
-
-    # if process.returncode == 0:
-    #     print('Done: ', n, ', ', args, '(pid = ' + str(process.pid) + ')')
-    # else:
-    #     print('Failed: ', n, ', ', args, '(pid = ' + str(process.pid) + ')')
-
-    results = [args[1], stdout, stderr, process.returncode]
-    wavm_results[n] = results;
-
-
 
 class FileDuplicateFinder:
     # 0 for matching at the beginning, 1 for matching at any position
@@ -60,17 +28,52 @@ class FileDuplicateFinder:
         ["Module does not declare a default memory object to put arguments in", 0],
         ["WebAssembly function requires 1 argument(s), but only 0 or 2 can be passed!", 0],
         ["corrupted size vs. prev_size", 1],
-        ["realloc(): invalid next size", 1]
+        ["realloc(): invalid next size", 1],
+        ["realloc(): invalid old size", 1]
     ]
 
-    def __init__(self, exe_name, search_dir):
+    def __init__(self, exe_name, search_dir, job_limit):
         self.exe_name = exe_name
         self.search_dir = search_dir
+        self.job_limit = job_limit
+        self.wavm_results = {}
+        self.md5map = {}
+        self.timeouted = []
 
         self.false_positives_map = {}
         for v in self.false_positives:
             pattern_str, match_any = v
             self.false_positives_map[pattern_str] = [ 0, [] ]
+
+    async def run_command_async(self, n, *args):
+        my_env = {**os.environ, 'LIBC_FATAL_STDERR_': '1'}  # libc default prints error messages to /dev/tty
+        process = await asyncio.create_subprocess_exec(
+            *args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE, env=my_env)
+
+        print('Started: ', n, ', ', args, '(pid = ' + str(process.pid) + ')')
+
+        future = asyncio.ensure_future(process.communicate())
+        done, pending = await asyncio.wait([future], timeout=5)
+        if pending:
+            if process.returncode is None:
+                self.timeouted.append(args[1])
+                # print("timeout, killing process: ", args[1])
+                try:
+                    process.kill()
+                except ProcessLookupError:
+                    pass
+
+        stdout, stderr = await future
+
+        if process.returncode == 0:
+            print('Done: ', n, ', ', args, '(pid = ' + str(process.pid) + ')')
+        else:
+            print('Failed: ', n, ', exit code = ', process.returncode, ', ', args, '(pid = ' + str(process.pid) + ')')
+
+        results = [args[1], stdout, stderr, process.returncode]
+        self.wavm_results[n] = results;
 
     def is_false_positive(self, error, file):
         for v in self.false_positives:
@@ -100,7 +103,7 @@ class FileDuplicateFinder:
 
     def find_unique_contents(self):
 
-        md5map = {}
+        self.md5map = {}
         for path, _, files in os.walk(self.search_dir):
             for filename in files:
                 if filename.endswith("README.txt"):
@@ -109,36 +112,33 @@ class FileDuplicateFinder:
                 if filepath.find("/crashes/") > 0 and os.path.isfile(filepath):
                     with open(filepath, mode='rb') as openfile:
                         filehash = md5(openfile.read()).hexdigest()
-                    md5map.setdefault(filehash, []).append(filepath)
+                    self.md5map.setdefault(filehash, []).append(filepath)
 
         total = 0
         k = 0
-        for md5hash, flist in md5map.items():
+        for md5hash, flist in self.md5map.items():
             # print( str(k) + ", md5: " + str(md5hash))
-            j = 0
             for fpath in flist:
                 # print( "    " + fpath)
-                j += 1
                 total += 1
             k += 1
-        print( "total " + str(total) + " files found, ", len(md5map),  " unique md5.")
+        print( "total " + str(total) + " files found, ", len(self.md5map),  " unique md5.")
 
         event_loop = asyncio.get_event_loop()
 
         try:
             futures = []
 
-            N = 5
             n = 0
             k = 0;
-            for md5hash, flist in md5map.items():
+            for md5hash, flist in self.md5map.items():
                 n += 1
                 k += 1
 
                 args = [self.exe_name, flist[0]]
-                futures.append(asyncio.ensure_future(run_command2(n, *args)))
+                futures.append(asyncio.ensure_future(self.run_command_async(n, *args)))
 
-                if k >= N:
+                if k >= self.job_limit:
                     event_loop.run_until_complete(asyncio.gather(*futures))
                     futures.clear()
                     k = 0;
@@ -157,7 +157,7 @@ class FileDuplicateFinder:
         unknown_error = []
 
         m = 0;
-        sorted_dict = dict(sorted(wavm_results.items()))
+        sorted_dict = dict(sorted(self.wavm_results.items()))
         print("total running results: ", len(sorted_dict))
         for k, v in sorted_dict.items():
             fname, stdout, stderr, exitcode = v
@@ -184,7 +184,13 @@ class FileDuplicateFinder:
             if (stderr is not None):
                 print(stderr)
 
+        print("count = ", len(self.timeouted), ", timeout")
+        for fname in self.timeouted:
+            print("    ", fname)
+
         print("count = ", len(succeeded), ", running succeeded")
+        for fname in succeeded:
+            print("    ", fname)
 
         print("count = ", len(empty_error), ", empty error info")
         for fname in empty_error:
@@ -192,8 +198,8 @@ class FileDuplicateFinder:
 
         for error_str, v in self.false_positives_map.items():
             print("count = ", len(v[1]), ", error = ", error_str)
-            # for fname in v[1]:
-            #     print("    ", fname)
+            for fname in v[1]:
+                print("    ", fname)
 
 
 def main(argv=None):
@@ -209,12 +215,14 @@ def main(argv=None):
                         help="Exe name to run")
     parser.add_argument("-d", "--dir", dest="dir", action="store",
                         help="Directory name to process")
+    parser.add_argument("-j", "--job", dest="job", action="store", type=int, default=10,
+                        help="Job limit")
 
     args = parser.parse_args()
 
-    if args.exe and args.dir:
+    if args.exe and args.dir and args.job:
 
-        fdf = FileDuplicateFinder(args.exe, args.dir)
+        fdf = FileDuplicateFinder(args.exe, args.dir, args.job)
         start = time.time()
 
         if platform.system() == 'Windows':
